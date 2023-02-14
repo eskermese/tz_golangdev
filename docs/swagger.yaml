@@ -1,0 +1,44 @@
+basePath: /api/
+definitions:
+  core.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  core.Transaction:
+    properties:
+      amount:
+        type: integer
+      from:
+        type: string
+      to:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: Service for getting blocks
+  title: GetBlock TZ
+  version: "1.0"
+paths:
+  /v1/transactions/maximum-change:
+    get:
+      consumes:
+      - application/json
+      description: Get the address of the account which balance changed the most(also
+        provides the receiver address) over the last 100 blocks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/core.Transaction'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.Error'
+      summary: Get Order total costs
+      tags:
+      - transactions
+swagger: "2.0"
