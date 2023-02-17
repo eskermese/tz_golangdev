@@ -30,12 +30,8 @@ func NewServer(cfg *config.Config, handler *restHandler.Handler, logger logger.L
 			ReadTimeout:  cfg.ClientHTTP.ReadTimeout,
 			WriteTimeout: cfg.ClientHTTP.WriteTimeout,
 			BodyLimit:    cfg.ClientHTTP.MaxHeaderMegabytes << 20,
-			JSONDecoder: func(data []byte, v interface{}) error {
-				return jsoniter.Unmarshal(data, v)
-			},
-			JSONEncoder: func(v interface{}) ([]byte, error) {
-				return jsoniter.Marshal(v)
-			},
+			JSONDecoder:  jsoniter.Unmarshal,
+			JSONEncoder:  jsoniter.Marshal,
 		}),
 		Handler: handler,
 		Addr:    fmt.Sprintf(":%d", cfg.ClientHTTP.Port),
