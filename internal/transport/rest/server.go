@@ -18,14 +18,12 @@ type Server struct {
 	httpServer        *fiber.App
 	Addr              string
 	Handler           *restHandler.Handler
-	masterCtx         context.Context
 	idleConnsClosed   chan struct{}
 	logger            logger.Logger
 }
 
-func NewServer(ctx context.Context, cfg *config.Config, handler *restHandler.Handler, logger logger.Logger) *Server {
+func NewServer(cfg *config.Config, handler *restHandler.Handler, logger logger.Logger) *Server {
 	s := &Server{
-		masterCtx:       ctx,
 		idleConnsClosed: make(chan struct{}),
 		httpServer: fiber.New(fiber.Config{
 			AppName:      "tz_golangdev",
@@ -53,10 +51,10 @@ func (s *Server) IsInsecure() bool {
 	return s.CertFile == nil && s.KeyFile == nil
 }
 
-func (s *Server) Run() error {
+func (s *Server) Run(ctx context.Context) error {
 	s.logger.Info(fmt.Sprintf(`serving ClientHTTP on "%s"`, s.Addr))
 
-	go s.gracefulShutdown(s.httpServer)
+	go s.gracefulShutdown(ctx, s.httpServer)
 
 	var err error
 	if s.IsInsecure() {
@@ -74,9 +72,9 @@ func (s *Server) Run() error {
 	return nil
 }
 
-func (s *Server) gracefulShutdown(httpSrv *fiber.App) {
+func (s *Server) gracefulShutdown(ctx context.Context, httpSrv *fiber.App) {
 	defer close(s.idleConnsClosed)
-	<-s.masterCtx.Done()
+	<-ctx.Done()
 
 	s.logger.Info("shutting down HTTP server")
 

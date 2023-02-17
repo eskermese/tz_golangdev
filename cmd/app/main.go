@@ -62,9 +62,9 @@ func main() {
 	g, gCtx := workers.GroupWithContext(ctx)
 
 	g.Go(func() error {
-		httpSrv := rest.NewServer(gCtx, cfg, handlers, log)
+		httpSrv := rest.NewServer(cfg, handlers, log)
 
-		if err := httpSrv.Run(); err != nil {
+		if err := httpSrv.Run(gCtx); err != nil {
 			return fmt.Errorf("http server run: %w", err)
 		}
 

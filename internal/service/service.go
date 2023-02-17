@@ -78,10 +78,10 @@ func (s Service) GetMaxTransactionChange(ctx context.Context) (core.Transaction,
 	}
 
 	result := core.Transaction{
-		AmountInWei: big.NewInt(0),
+		Amount: big.NewInt(0),
 	}
 	for _, v := range results {
-		if v.AmountInWei.Cmp(result.AmountInWei) == 1 {
+		if v.Amount.Cmp(result.Amount) == 1 {
 			result = v
 		}
 	}
@@ -96,15 +96,15 @@ func (s Service) getMaxValueResultFromBlock(ctx context.Context, address int64) 
 	}
 
 	result := core.Transaction{
-		AmountInWei: big.NewInt(0),
+		Amount: big.NewInt(0),
 	}
 
 	for _, transaction := range blockData.Result.Transactions {
-		valueDec := new(big.Int)
-		valueDec.SetString(hexaNumberToInteger(transaction.Value), 16)
+		value := new(big.Int)
+		value.SetString(hexaNumberToInteger(transaction.Value), 16)
 
-		if valueDec.Cmp(result.AmountInWei) == 1 {
-			result.AmountInWei = valueDec
+		if value.Cmp(result.Amount) == 1 {
+			result.Amount = value
 			result.From = transaction.From
 			result.To = transaction.To
 		}
